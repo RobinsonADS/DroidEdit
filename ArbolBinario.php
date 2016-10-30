@@ -30,6 +30,7 @@ class ArbolBinario{
     }else{
         return null;
     }
+    return null;
   }
 
   public function agregarNodo($papa, $ubicacion, $nombreHijo){
@@ -37,7 +38,8 @@ class ArbolBinario{
     $existe = $this->getNodo($this->raiz, $nombreHijo->getInfo());
     //para obtener el nodo papa con la info agregada
     $nombrePapa = $this->getNodo($this->raiz, $papa);
-    if($existe == null){
+    echo "<b>Nombre papa</b>"; print_r($nombrePapa);
+    if($existe == null && $nombrePapa != null){
       if($ubicacion == "derecha"){
         $nombrePapa->setDerecha($nombreHijo);
       }
@@ -121,39 +123,36 @@ class ArbolBinario{
       if($nodo->getInfo()%2==0){
         return $this->contarNumerosPares($nodo->getDerecha())+$this->contarNumerosPares($nodo->getIzquierda())+1;
       }else{
-              return $this->contarNumerosPares($nodo->getDerecha())+$this->contarNumerosPares($nodo->getIzquierda());
-           }
+        return $this->contarNumerosPares($nodo->getDerecha())+$this->contarNumerosPares($nodo->getIzquierda());
+      }
     }else{
-            return 0;
-         }
+      return 0;
+    }
   }
 
   public function altura($nodo){
     if($nodo!=null){
       if($nodo->getDerecha()!=null){
-        return $this->altura($nodo->getDerecha())+$this->altura($nodo->getIzquierda())+1;
+        return max($this->altura($nodo->getDerecha()), $this->altura($nodo->getIzquierda()))+1;
         if($nodo->getIzquierda()!=null){
           return $this->altura($nodo->getDerecha())+$this->altura($nodo->getIzquierda());
         }else{
                 return 0;
         }
-      }else{
-              return 0;
       }
-       if($nodo->getIzquierda()!=null){
-        return $this->altura($nodo->getDerecha())+$this->altura($nodo->getIzquierda())+1;
+      if($nodo->getIzquierda()!=null){
+        return max($this->altura($nodo->getDerecha()), $this->altura($nodo->getIzquierda()))+1;
         if($nodo->getDerecha()!=null){
           return $this->altura($nodo->getDerecha())+$this->altura($nodo->getIzquierda());
         }else{
-                return 0;
+           return 0;
         }
       }else{
-              return 0;
+         return 0;
       }
     }else{
-            return 0;
+       return -1;
     }
-
   }
 
 }
