@@ -11,43 +11,36 @@ class ArbolBinario{
     return $this->raiz;
   }
 
-  public function getNodo($nodo, $info){
-    if($nodo!=null){
-      if($info == $nodo->getInfo()){
-         return $nodo;
-      }else{
-        if($nodo->getDerecha()!=null){
-          if($this->getNodo($nodo->getDerecha(), $info)==null){
-              return $this->getNodo($nodo->getIzquierda(), $info);
-          }
-        }
-        if($nodo->getIzquierda()!=null){
-          if($this->getNodo($nodo->getIzquierda(), $info)==null){
-              return $this->getNodo($nodo->getDerecha(), $info);
-          }
-        }
-      }
-    }else{
-        return null;
+  public function getNodo($raiz,$dato){
+  if($raiz !=null){
+   if($raiz->getInfo() == $dato){
+    return $raiz;
+   }else{
+    $resultado = $this->getNodo($raiz->getIzquierda(),$dato);
+    if ($resultado == null) {
+     $resultado = $this->getNodo($raiz->getDerecha(),$dato);
     }
-    return null;
+   }
+   return $resultado;
   }
+ }
 
   public function agregarNodo($papa, $ubicacion, $nombreHijo){
     //para saber si el nodo a agregar ya existe en el arbol
     $existe = $this->getNodo($this->raiz, $nombreHijo->getInfo());
     //para obtener el nodo papa con la info agregada
     $nombrePapa = $this->getNodo($this->raiz, $papa);
-    echo "<b>Nombre papa</b>"; print_r($nombrePapa);
     if($existe == null && $nombrePapa != null){
       if($ubicacion == "derecha"){
         $nombrePapa->setDerecha($nombreHijo);
+        return true;
       }
       if($ubicacion == "izquierda"){
         $nombrePapa->setIzquierda($nombreHijo);
+        return true;
       }
     }else{
-      return "No se pudo agregar";
+      return false;
     }
   }
 
@@ -67,27 +60,44 @@ class ArbolBinario{
 
   //Metodo para allar el nodo padre de un nodo dado
   public function getPadre($nodo, $info){
+    $resultado;
     if($nodo!=null){
       if($nodo->getDerecha()!=null){
-        if($nodo->getDerecha()->getInfo() == $info){
+        if($nodo->getDerecha()->getInfo()==$info){
           return $nodo;
         }else{
-          if($this->getPadre($nodo->getDerecha(), $info)==null){
-            return $this->getPadre($nodo->getIzquierda(), $info);
+          $resultado = $this->getPadre($nodo->getDerecha(), $info);
+          if($resultado!=null){
+            return $resultado;
+          }else{
+            if($nodo->getIzquierda()!=null){
+              if($nodo->getIzquierda()->getInfo()==$info){
+                return $nodo;
+              }else{
+                return $this->getPadre($nodo->getIzquierda(), $info);
+              }
+            }
           }
         }
       }
       if($nodo->getIzquierda()!=null){
-        if($nodo->getIzquierda()->getInfo() == $info){
+        if($nodo->getIzquierda()->getInfo()==$info){
           return $nodo;
         }else{
-          if($this->getPadre($nodo->getIzquierda(), $info)==null){
-            return $this->getPadre($nodo->getDerecha(), $info);
+          $resultado = $this->getPadre($nodo->getIzquierda(), $info);
+          if($resultado!=null){
+            return $resultado;
+          }else{
+            if($nodo->getDerecha()!=null){
+              if($nodo->getDerecha()->getInfo()==$info){
+                return $nodo;
+              }else{
+                return $this->getPadre($nodo->getDerecha(), $info);
+              }
+            }
           }
         }
       }
-    }else {
-      return null;
     }
   }
 
@@ -96,13 +106,17 @@ class ArbolBinario{
     if($nodoEliminar!=null){
       if($this->esHoja($nodoEliminar)){
         $padre = $this->getPadre($this->raiz, $nodoEliminar->getInfo());
-        if($padre->getDerecha()->getInfo() == $nodoEliminar->getInfo()){
-          $padre->setDerecha(null);
-          return true;
+        if($padre->getDerecha()!=null){
+          if($padre->getDerecha()->getInfo() == $nodoEliminar->getInfo()){
+            $padre->setDerecha(null);
+            return true;
+          }
         }
-        if($padre->getIzquierda()->getInfo() == $nodoEliminar->getInfo()){
-          $padre->setIzquierda(null);
-          return true;
+        if($padre->getIzquierda()!=null){
+          if($padre->getIzquierda()->getInfo() == $nodoEliminar->getInfo()){
+            $padre->setIzquierda(null);
+            return true;
+          }
         }
       }
     }else{
@@ -137,7 +151,7 @@ class ArbolBinario{
         if($nodo->getIzquierda()!=null){
           return $this->altura($nodo->getDerecha())+$this->altura($nodo->getIzquierda());
         }else{
-                return 0;
+          return 0;
         }
       }
       if($nodo->getIzquierda()!=null){
@@ -145,16 +159,63 @@ class ArbolBinario{
         if($nodo->getDerecha()!=null){
           return $this->altura($nodo->getDerecha())+$this->altura($nodo->getIzquierda());
         }else{
-           return 0;
+          return 0;
         }
       }else{
-         return 0;
+        return 0;
       }
     }else{
-       return -1;
+      return -1;
     }
   }
 
-}
+  public function recorridoNiveles(){
+    $root=$this->raiz;
+    $cola = array();
+    if($root!=null){
+      $cola[]=$root;
+      while (count($cola)!=0) {
+        $v = array_shift($cola);
+        $i[] = $v;
+        if($v->getIzquierda()!=null){
+          $cola[]=$v->getIzquierda();
+        }
+        if($v->getDerecha()!=null){
+          $cola[]=$v->getDerecha();
+        }
+      }
+    }
+    return $i;
+  }
+
+  public function preOrden($nodo){
+    if($nodo!=null){
+      echo $nodo->getInfo();
+      $this->preOrden($nodo->getIzquierda());
+      $this->preOrden($nodo->getDerecha());
+    }
+  }
+
+  public function inOrden($nodo){
+    if($nodo!=null){
+      $this->inOrden($nodo->getIzquierda());
+      $imprimir[]=$nodo->getInfo();
+      $this->inOrden($nodo->getDerecha());
+    }
+    return $imprimir;
+  }
+
+  public function posOrden($nodo){
+    if($nodo!=null){
+      $this->posOrden($nodo->getIzquierda());
+      $this->posOrden($nodo->getDerecha());
+      $imprimir[]=$nodo->getInfo();
+    }
+    return $imprimir;
+  }
+
+}//Ultima llave
+
+
 
 ?>
