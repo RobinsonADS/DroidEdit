@@ -25,18 +25,100 @@ if (!isset($_SESSION["ArbolBinario"])) {
     <script type="text/javascript" src="vis/dist/vis.js"></script>
     <link href="vis/dist/vis.css" rel="stylesheet" type="text/css" />
 
+    <!--visjs-->
     <style type="text/css">
-        #grafo1 {
-            position: absolute;
-            top: 70px;
-            left: 310px;
-            width: 1048px;
-            height: 580px;
-            border: 1px solid lightgray;
+        body {
+            font: 10pt sans;
+        }
+
+        #mynetwork {
+          position: absolute;
+          top: 70px;
+          left: 310px;
+          width: 1048px;
+          height: 580px;
+          border: 1px solid lightgray;
         }
     </style>
+    <script type="text/javascript" src="../../../dist/vis.js"></script>
+    <link href="../../../dist/vis.css" rel="stylesheet" type="text/css"/>
+
+
+    <script type="text/javascript">
+    var nodes = new vis.DataSet([
+   <?php
+       $b = $_SESSION["ArbolBinario"]->recorridoNiveles();
+       $auxiliar = 1;
+       foreach ($b as $key => $value) {
+           if($auxiliar == count($b)){
+               echo "{id:  '$value', label:  '$value'}";
+           }else{
+               echo "{id:  '$value', label:  '$value' },";
+               $auxiliar++;
+           }
+       }
+
+   ?>
+       ]);
+       var edges = new vis.DataSet([
+   <?php
+      $_SESSION["ArbolBinario"]->aristas($_SESSION["ArbolBinario"]->getRaiz());
+   ?>
+       ]);
+        var network = null;
+        var directionInput = document.getElementById("direction");
+
+        function destroy() {
+            if (network !== null) {
+                network.destroy();
+                network = null;
+            }
+        }
+
+        function draw() {
+            destroy();
+            nodes;
+            edges;
+            var connectionCount = [];
+            // create a network
+            var container = document.getElementById('mynetwork');
+            var data = {
+                nodes: nodes,
+                edges: edges
+            };
+
+            var options = {
+                edges: {
+                    smooth: {
+                        type: 'cubicBezier',
+                        forceDirection: (directionInput.value == "UD" || directionInput.value == "DU") ? 'vertical' : 'horizontal',
+                        roundness: 0.4
+                    },
+                    arrows:{
+                      to:{
+                        enabled:true
+                      }
+                    }
+                },
+                layout: {
+                    hierarchical: {
+                        direction: directionInput.value
+                    }
+                },
+                physics:false
+            };
+            network = new vis.Network(container, data, options);
+
+            // add event listeners
+            network.on('select', function (params) {
+                document.getElementById('selection').innerHTML = 'Selection: ' + params.nodes;
+            });
+        }
+
+    </script>
+    <script src="../../googleAnalytics.js"></script>
    </head>
-   <body>
+   <body onload="draw();">
      <!--Menu-->
      <nav>
        <div class="nav-wrapper cyan accent-4">
@@ -69,11 +151,11 @@ if (!isset($_SESSION["ArbolBinario"])) {
                   <div class="row">
                     <div class="">
                       <div class="card-panel">
-                        <form class="center-align" action="index.php" method="post">
+                        <form class="center-align" action="index2.php" method="post">
                           <div class="">
                             Crear Arbol
                             <input placeholder="Nombre de la Raiz" type="number" name="nodoRaiz" class="validate">
-                            <button class="btn waves-effect waves-light " type="submit" name="action" action="index.php">Crear Arbol
+                            <button class="btn waves-effect waves-light " type="submit" name="action" action="index2.php">Crear Arbol
                               <i class="material-icons right">send</i>
                             </button>
                           </div>
@@ -83,7 +165,7 @@ if (!isset($_SESSION["ArbolBinario"])) {
 
                     <div class="">
                       <div class="card-panel">
-                        <form class="center-align" action="index.php" method="post">
+                        <form class="center-align" action="index2.php" method="post">
                           <div class="">
                             Crear Nodos
                             <input placeholder="Nombre del Papa" type="number" name="nodoPadre" class="validate">
@@ -150,67 +232,39 @@ if (!isset($_SESSION["ArbolBinario"])) {
      <script type="text/javascript" src="js/main.js"></script>
 
      <!--Vis.js-->
-     <div class="grafo" id="grafo1"></div>
+     <p>
+    <input type="button" id="btn-UD" value="Up-Down">
+    <input type="button" id="btn-DU" value="Down-Up">
+    <input type="button" id="btn-LR" value="Left-Right">
+    <input type="button" id="btn-RL" value="Right-Left">
+    <input type="hidden" id='direction' value="UD">
+</p>
 
-     <script type="text/javascript">
+<div id="mynetwork"></div>
 
-     //generar nodos con PHP
-     	var nodos = new vis.DataSet([
-     <?php
-         $b = $_SESSION["ArbolBinario"]->recorridoNiveles();
-         $auxiliar = 1;
-         foreach ($b as $key => $value) {
-             if($auxiliar == count($b)){
-                 echo "{id:  '$value', label:  '$value'}";
-             }else{
-                 echo "{id:  '$value', label:  '$value' },";
-                 $auxiliar++;
-             }
-         }
-
-     ?>
-         ]);
-
-         // Generar aristas con PHP
-         var aristas = new vis.DataSet([
-     <?php
-        $_SESSION["ArbolBinario"]->aristas($_SESSION["ArbolBinario"]->getRaiz());
-     ?>
-         ]);
-
-         // crear el grafo
-         var contenedor = document.getElementById("grafo1");
-
-         // construir los datos
-         var datos = {
-             nodes: nodos,
-             edges: aristas
-         };
-
-         var opciones = {
-              edges: {
-                arrows: {
-                  to: {
-                    enabled: true
-                  }
-                }
-                smooth: {
-                       type: cubicBezier,
-                       forceDirection: vertical,
-                       roundness: 0.4
-                }
-              }
-              layout: {
-                    hierarchical: {
-                        direction: Up-Down
-                    }
-                }
-          };
-
-         // inicializar vista de grafo
-         var grafo = new vis.Network(contenedor, datos, opciones);
-
-     </script>
+<script language="JavaScript">
+    var directionInput = document.getElementById("direction");
+    var btnUD = document.getElementById("btn-UD");
+    btnUD.onclick = function () {
+        directionInput.value = "UD";
+        draw();
+    };
+    var btnDU = document.getElementById("btn-DU");
+    btnDU.onclick = function () {
+        directionInput.value = "DU";
+        draw();
+    };
+    var btnLR = document.getElementById("btn-LR");
+    btnLR.onclick = function () {
+        directionInput.value = "LR";
+        draw();
+    };
+    var btnRL = document.getElementById("btn-RL");
+    btnRL.onclick = function () {
+        directionInput.value = "RL";
+        draw();
+    };
+</script>
    </body>
  </html>
 

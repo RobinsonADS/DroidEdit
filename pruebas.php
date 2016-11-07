@@ -43,8 +43,13 @@ include ("ArbolBinario.php");
   echo "<hr>"; echo "<b>Recorrido pre orden: </b>";
   //print_r($arbol->preOrden($arbol->getRaiz()), $imprimir=array());
 
+  echo "<hr>"; echo "<b>Aristas: </b>";
+  print_r($arbol->aristas($arbol->getRaiz()));
+  
   echo "<hr>";
   print_r($arbol);
+
+
 
 
 ?>

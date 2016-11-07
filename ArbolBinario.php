@@ -176,7 +176,7 @@ class ArbolBinario{
       $cola[]=$root;
       while (count($cola)!=0) {
         $v = array_shift($cola);
-        $i[] = $v;
+        $i[] = $v->getInfo();
         if($v->getIzquierda()!=null){
           $cola[]=$v->getIzquierda();
         }
@@ -212,6 +212,34 @@ class ArbolBinario{
       $imprimir[]=$nodo->getInfo();
     }
     return $imprimir;
+  }
+
+  public function aristas($nodo){
+    if($nodo!=null){
+      if($nodo->getDerecha()!=null&&$nodo->getIzquierda()!=null){
+        $hastaD=$nodo->getDerecha()->getInfo(); $hastaI=$nodo->getIzquierda()->getInfo();
+        $de=$nodo->getInfo();
+        echo "{from: '$de', to: '$hastaD'},";
+        echo "{from: '$de', to: '$hastaI'},";
+        $this->aristas($nodo->getDerecha());
+        $this->aristas($nodo->getIzquierda());
+      }else{
+        if($nodo->getIzquierda()!=null){
+          $hasta2=$nodo->getIzquierda()->getInfo();
+          $de=$nodo->getInfo();
+          echo "{from: '$de', to: '$hasta2'},";
+          $this->aristas($nodo->getIzquierda());
+        }
+        if($nodo->getDerecha()!=null){
+          $hasta2=$nodo->getDerecha()->getInfo();
+          $de=$nodo->getInfo();
+          echo "{from: '$de', to: '$hasta2'},";
+          $this->aristas($nodo->getDerecha());
+        }
+      }
+    }else{
+      echo "";
+    }
   }
 
 }//Ultima llave
