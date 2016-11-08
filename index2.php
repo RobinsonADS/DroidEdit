@@ -21,6 +21,14 @@ if (!isset($_SESSION["ArbolBinario"])) {
            media="screen, projection" type="text/css">
     <link rel="stylesheet" href="css/main.css" media="screen">
 
+    <!--Alertify js-->
+    <link rel="stylesheet" href="css/alertify.core.css" />
+    <link rel="stylesheet" href="css/alertify.default.css" />
+    <!--link rel="stylesheet" href="themes/default.min.css" /-->
+    <script src="js/alertify.min.js"></script>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
     <!--visJs-->
     <script type="text/javascript" src="vis/dist/vis.js"></script>
     <link href="vis/dist/vis.css" rel="stylesheet" type="text/css" />
@@ -184,7 +192,7 @@ if (!isset($_SESSION["ArbolBinario"])) {
 
                     <div class="">
                       <div class="card-panel">
-                        <form class="center-align" action="index.php" method="post">
+                        <form class="center-align" action="index2.php" method="post">
                           <div class="">
                             Eliminar Nodo
                             <input placeholder="Nombre del Nodo" type="text" name="eliminarNodo" class="validate">
@@ -203,7 +211,7 @@ if (!isset($_SESSION["ArbolBinario"])) {
               <div class="collapsible-body">
                 <ul>
                   <!--Aqui van los proceso-->
-                  <a class="waves-effect waves-light btn"><i class="material-icons left">cloud</i>Numero Nodos</a>
+                  <a class="waves-effect waves-light btn" id="alertaNumeroNodos"><i class="material-icons left">cloud</i>Numero Nodos</a>
                   <a class="waves-effect waves-light btn"><i class="material-icons left">cloud</i>Numeros Pares</a>
                   <a class="waves-effect waves-light btn"><i class="material-icons left">cloud</i>Arbol Completo</a>
                   <a class="waves-effect waves-light btn"><i class="material-icons left">cloud</i>Ver Nodos Hojas</a>
@@ -264,7 +272,20 @@ if (!isset($_SESSION["ArbolBinario"])) {
         directionInput.value = "RL";
         draw();
     };
-</script>
+    </script>
+
+    <!--Procesos-->
+
+    <!--Contar nodos-->
+    <?php $jsContarNodos = $_SESSION["ArbolBinario"]->contarNodos($_SESSION["ArbolBinario"]->getRaiz()); ?>
+  <script>
+    var jsContarNodos = <?php echo $jsContarNodos ?>;
+    $(document).ready(function(){
+      $("#alertaNumeroNodos").click(function(){
+        alertify.alert("El arbol tiene " + jsContarNodos + " nodos");
+      });
+    });
+  </script>
    </body>
  </html>
 
@@ -286,7 +307,5 @@ if (!isset($_SESSION["ArbolBinario"])) {
    $_SESSION["ArbolBinario"]->eliminarNodo($_POST["eliminarNodo"]+0);
    print_r($_SESSION['ArbolBinario']);
  }
-
-
 
  ?>
