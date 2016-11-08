@@ -188,6 +188,19 @@ class ArbolBinario{
     return $i;
   }
 
+  public function mostrar(){
+    $contador=1; $resultado;
+    $recorrido=$this->recorridoNiveles();
+    foreach ($recorrido as $key => $value) {
+      if($contador!=count($recorrido)){
+        $resultado +=$value.", ";
+      }else{
+        $resultado = $resultado + $value;
+      }
+      $contador++;
+    }
+  }
+
   public function preOrden($nodo){
     if($nodo!=null){
       echo $nodo->getInfo();

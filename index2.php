@@ -212,10 +212,10 @@ if (!isset($_SESSION["ArbolBinario"])) {
                 <ul>
                   <!--Aqui van los proceso-->
                   <a class="waves-effect waves-light btn" id="alertaNumeroNodos"><i class="material-icons left">cloud</i>Numero Nodos</a>
-                  <a class="waves-effect waves-light btn"><i class="material-icons left">cloud</i>Numeros Pares</a>
-                  <a class="waves-effect waves-light btn"><i class="material-icons left">cloud</i>Arbol Completo</a>
+                  <a class="waves-effect waves-light btn" id="numerosPares"><i class="material-icons left">cloud</i>Numeros Pares</a>
+                  <a class="waves-effect waves-light btn" id="arbolCompleto"><i class="material-icons left">cloud</i>Arbol Completo</a>
                   <a class="waves-effect waves-light btn"><i class="material-icons left">cloud</i>Ver Nodos Hojas</a>
-                  <a class="waves-effect waves-light btn"><i class="material-icons left">cloud</i>Altura</a>
+                  <a class="waves-effect waves-light btn" id="altura"><i class="material-icons left">cloud</i>Altura</a>
                 </ul>
               </div>
             </li>
@@ -223,8 +223,8 @@ if (!isset($_SESSION["ArbolBinario"])) {
             <li class="bold"><a class="collapsible-header  waves-effect waves-teal"><b>Recorridos</b></a>
               <div class="collapsible-body">
                 <ul>
-                  <!--Aqui van los proceso-->
-                  <a class="waves-effect waves-light btn"><i class="material-icons left">cloud</i>Niveles</a>
+                  <!--Aqui van los recorridos-->
+                  <a class="waves-effect waves-light btn" id="niveles"><i class="material-icons left">cloud</i>Niveles</a>
                   <a class="waves-effect waves-light btn"><i class="material-icons left">cloud</i>Pre-Orden</a>
                   <a class="waves-effect waves-light btn"><i class="material-icons left">cloud</i>In-Orden</a>
                   <a class="waves-effect waves-light btn"><i class="material-icons left">cloud</i>Pos-Orden</a>
@@ -286,6 +286,44 @@ if (!isset($_SESSION["ArbolBinario"])) {
       });
     });
   </script>
+
+  <!--Numeros pares-->
+  <?php $numerosPares = $_SESSION["ArbolBinario"]->contarNumerosPares($_SESSION["ArbolBinario"]->getRaiz()); ?>
+<script>
+  var numerosPares = <?php echo $numerosPares ?>;
+  $(document).ready(function(){
+    $("#numerosPares").click(function(){
+      alertify.alert("El arbol tiene " + numerosPares + " numeros pares");
+    });
+  });
+</script>
+
+<!--Altura del arbol-->
+<?php
+  $recorridoPorNiveles = $_SESSION["ArbolBinario"]->recorridoNiveles();
+  $recorrido=implode(",", $recorridoPorNiveles);
+?>
+<script>
+var recorridoPor = <?php echo $recorrido ?>;
+$(document).ready(function(){
+  $("#niveles").click(function(){
+    alertify.alert("Recorrido por niveles: " + recorridoPor);
+  });
+});
+</script>
+
+<!--Recorridos-->
+<!--Altura del arbol-->
+<?php $altura = $_SESSION["ArbolBinario"]->altura($_SESSION["ArbolBinario"]->getRaiz())+1; ?>
+<script>
+var altura = <?php echo $altura ?>;
+$(document).ready(function(){
+  $("#altura").click(function(){
+    alertify.alert("La altura del arbol es: " + altura);
+  });
+});
+</script>
+
    </body>
  </html>
 
