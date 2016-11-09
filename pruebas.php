@@ -40,12 +40,17 @@ include ("ArbolBinario.php");
   print_r($arbol->recorridoNiveles());
 
   //Prueba recorrido pre orden
+  //Prueba recorrido pre orden
   echo "<hr>"; echo "<b>Recorrido pre orden: </b>";
-  //print_r($arbol->preOrden($arbol->getRaiz()), $imprimir=array());
+  echo $arbol->preOrden($arbol->getRaiz());
+
 
   echo "<hr>"; echo "<b>Aristas: </b>";
   print_r($arbol->aristas($arbol->getRaiz()));
-  
+
+  echo "<hr>"; echo "<b>hojas: </b>";
+  print_r($arbol->hojas());
+
   echo "<hr>";
   print_r($arbol);
 

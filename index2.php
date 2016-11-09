@@ -51,79 +51,6 @@ if (!isset($_SESSION["ArbolBinario"])) {
     <script type="text/javascript" src="../../../dist/vis.js"></script>
     <link href="../../../dist/vis.css" rel="stylesheet" type="text/css"/>
 
-
-    <script type="text/javascript">
-    var nodes = new vis.DataSet([
-   <?php
-       $b = $_SESSION["ArbolBinario"]->recorridoNiveles();
-       $auxiliar = 1;
-       foreach ($b as $key => $value) {
-           if($auxiliar == count($b)){
-               echo "{id:  '$value', label:  '$value'}";
-           }else{
-               echo "{id:  '$value', label:  '$value' },";
-               $auxiliar++;
-           }
-       }
-
-   ?>
-       ]);
-       var edges = new vis.DataSet([
-   <?php
-      $_SESSION["ArbolBinario"]->aristas($_SESSION["ArbolBinario"]->getRaiz());
-   ?>
-       ]);
-        var network = null;
-        var directionInput = document.getElementById("direction");
-
-        function destroy() {
-            if (network !== null) {
-                network.destroy();
-                network = null;
-            }
-        }
-
-        function draw() {
-            destroy();
-            nodes;
-            edges;
-            var connectionCount = [];
-            // create a network
-            var container = document.getElementById('mynetwork');
-            var data = {
-                nodes: nodes,
-                edges: edges
-            };
-
-            var options = {
-                edges: {
-                    smooth: {
-                        type: 'cubicBezier',
-                        forceDirection: (directionInput.value == "UD" || directionInput.value == "DU") ? 'vertical' : 'horizontal',
-                        roundness: 0.4
-                    },
-                    arrows:{
-                      to:{
-                        enabled:true
-                      }
-                    }
-                },
-                layout: {
-                    hierarchical: {
-                        direction: directionInput.value
-                    }
-                },
-                physics:false
-            };
-            network = new vis.Network(container, data, options);
-
-            // add event listeners
-            network.on('select', function (params) {
-                document.getElementById('selection').innerHTML = 'Selection: ' + params.nodes;
-            });
-        }
-
-    </script>
     <script src="../../googleAnalytics.js"></script>
    </head>
    <body onload="draw();">
@@ -176,8 +103,8 @@ if (!isset($_SESSION["ArbolBinario"])) {
                         <form class="center-align" action="index2.php" method="post">
                           <div class="">
                             Crear Nodos
-                            <input placeholder="Nombre del Papa" type="number" name="nodoPadre" class="validate">
-                            <input placeholder="Nombre del Hijo" type="number" name="nodoHijo" class="validate">
+                            <input placeholder="Nombre del Papa" type="number" name="nodoPadre" class="validate" id="a1">
+                            <input placeholder="Nombre del Hijo" type="number" name="nodoHijo" class="validate" id="a1">
                             <input type="radio" name="group1" id="test1" value="derecha">
                             <label for="test1">Derecha</label>
                             <input type="radio" name="group1" id="test2" value="izquierda">
@@ -195,7 +122,7 @@ if (!isset($_SESSION["ArbolBinario"])) {
                         <form class="center-align" action="index2.php" method="post">
                           <div class="">
                             Eliminar Nodo
-                            <input placeholder="Nombre del Nodo" type="text" name="eliminarNodo" class="validate">
+                            <input placeholder="Nombre del Nodo" type="number" name="eliminarNodo" class="validate" id="a1">
                             <button class="btn waves-effect waves-light " type="submit" name="action">Eliminar Nodo
                               <i class="material-icons right">send</i>
                             </button>
@@ -214,7 +141,7 @@ if (!isset($_SESSION["ArbolBinario"])) {
                   <a class="waves-effect waves-light btn" id="alertaNumeroNodos"><i class="material-icons left">cloud</i>Numero Nodos</a>
                   <a class="waves-effect waves-light btn" id="numerosPares"><i class="material-icons left">cloud</i>Numeros Pares</a>
                   <a class="waves-effect waves-light btn" id="arbolCompleto"><i class="material-icons left">cloud</i>Arbol Completo</a>
-                  <a class="waves-effect waves-light btn"><i class="material-icons left">cloud</i>Ver Nodos Hojas</a>
+                  <a class="waves-effect waves-light btn" id="hoja"><i class="material-icons left">cloud</i>Ver Nodos Hojas</a>
                   <a class="waves-effect waves-light btn" id="altura"><i class="material-icons left">cloud</i>Altura</a>
                 </ul>
               </div>
@@ -225,9 +152,9 @@ if (!isset($_SESSION["ArbolBinario"])) {
                 <ul>
                   <!--Aqui van los recorridos-->
                   <a class="waves-effect waves-light btn" id="niveles"><i class="material-icons left">cloud</i>Niveles</a>
-                  <a class="waves-effect waves-light btn"><i class="material-icons left">cloud</i>Pre-Orden</a>
-                  <a class="waves-effect waves-light btn"><i class="material-icons left">cloud</i>In-Orden</a>
-                  <a class="waves-effect waves-light btn"><i class="material-icons left">cloud</i>Pos-Orden</a>
+                  <a class="waves-effect waves-light btn" id="preOrden"><i class="material-icons left">cloud</i>Pre-Orden</a>
+                  <a class="waves-effect waves-light btn" id="inOrden"><i class="material-icons left">cloud</i>In-Orden</a>
+                  <a class="waves-effect waves-light btn" id="posOrden"><i class="material-icons left">cloud</i>Pos-Orden</a>
                 </ul>
               </div>
             </li>
@@ -274,8 +201,30 @@ if (!isset($_SESSION["ArbolBinario"])) {
     };
     </script>
 
-    <!--Procesos-->
+    <!--Todos los metodos aplicados a la interfaz-->
 
+    <!--Primeros pasos-->
+    <?php
+
+    //Para crear raiz
+    if(isset($_POST["nodoRaiz"])){
+      $a=$_SESSION["ArbolBinario"]->__construct(new NodoBinario($_POST["nodoRaiz"]+=0));
+    }
+
+    //Para crear nodo
+    if(isset($_POST["nodoPadre"]) && isset($_POST["nodoHijo"])){
+      $nodoHijo=new NodoBinario($_POST["nodoHijo"]+=0);
+      $_SESSION['ArbolBinario']->agregarNodo($_POST["nodoPadre"]+0, $_POST["group1"], $nodoHijo);
+    }
+
+    //Para eliminar nodo
+    if(isset($_POST["eliminarNodo"])){
+      $_SESSION["ArbolBinario"]->eliminarNodo($_POST["eliminarNodo"]+0);
+    }
+
+    ?>
+
+    <!--Procesos-->
     <!--Contar nodos-->
     <?php $jsContarNodos = $_SESSION["ArbolBinario"]->contarNodos($_SESSION["ArbolBinario"]->getRaiz()); ?>
   <script>
@@ -299,21 +248,6 @@ if (!isset($_SESSION["ArbolBinario"])) {
 </script>
 
 <!--Altura del arbol-->
-<?php
-  $recorridoPorNiveles = $_SESSION["ArbolBinario"]->recorridoNiveles();
-  $recorrido=implode(",", $recorridoPorNiveles);
-?>
-<script>
-var recorridoPor = <?php echo $recorrido ?>;
-$(document).ready(function(){
-  $("#niveles").click(function(){
-    alertify.alert("Recorrido por niveles: " + recorridoPor);
-  });
-});
-</script>
-
-<!--Recorridos-->
-<!--Altura del arbol-->
 <?php $altura = $_SESSION["ArbolBinario"]->altura($_SESSION["ArbolBinario"]->getRaiz())+1; ?>
 <script>
 var altura = <?php echo $altura ?>;
@@ -324,26 +258,113 @@ $(document).ready(function(){
 });
 </script>
 
+<!--Recorridos-->
+<!--por nivel-->
+<?php
+  $recorridoPorNiveles = $_SESSION["ArbolBinario"]->recorridoNiveles();
+  $recorrido=implode($recorridoPorNiveles);
+?>
+  <script>
+  var recorridoPor = <?php echo $recorrido ?>;
+  $(document).ready(function(){
+    $("#niveles").click(function(){
+      alertify.alert("Recorrido por niveles: " + recorridoPor);
+    });
+  });
+</script>
+
+<!--por preOrden-->
+<?php
+  $recorridoPorPreOrden = $_SESSION["ArbolBinario"]->preOrden($_SESSION["ArbolBinario"]->getRaiz());
+  //$recorridoPreOrden=implode($recorridoPorPreOrden);
+?>
+  <script>
+  var recorridoPorPreOrden = <?php echo $recorridoPorPreOrden ?>;
+  $(document).ready(function(){
+    $("#preOrden").click(function(){
+      alertify.alert("Recorrido preOrden: " + recorridoPorPreOrden);
+    });
+  });
+
+  <?php
+    $hojas=$_SESSION["ArbolBinario"]->hojas();
+   ?>
+</script>
+
+<!--Graficar-->
+
+<script type="text/javascript">
+var nodes = new vis.DataSet([
+<?php
+   $b = $_SESSION["ArbolBinario"]->recorridoNiveles();
+   $auxiliar = 1;
+   foreach ($b as $key => $value) {
+       if($auxiliar == count($b)){
+           echo "{id:  '$value', label:  '$value'}";
+       }else{
+           echo "{id:  '$value', label:  '$value' },";
+           $auxiliar++;
+       }
+   }
+
+?>
+   ]);
+   var edges = new vis.DataSet([
+<?php
+  $_SESSION["ArbolBinario"]->aristas($_SESSION["ArbolBinario"]->getRaiz());
+?>
+   ]);
+    var network = null;
+    var directionInput = document.getElementById("direction");
+
+    function destroy() {
+        if (network !== null) {
+            network.destroy();
+            network = null;
+        }
+    }
+
+    function draw() {
+        destroy();
+        nodes;
+        edges;
+        var connectionCount = [];
+        // create a network
+        var container = document.getElementById('mynetwork');
+        var data = {
+            nodes: nodes,
+            edges: edges
+        };
+
+        var options = {
+            edges: {
+                smooth: {
+                    type: 'cubicBezier',
+                    forceDirection: (directionInput.value == "UD" || directionInput.value == "DU") ? 'vertical' : 'horizontal',
+                    roundness: 0.4
+                },
+                arrows:{
+                  to:{
+                    enabled:true
+                  }
+                }
+            },
+            layout: {
+                hierarchical: {
+                    direction: directionInput.value
+                }
+            },
+            physics:false
+        };
+        network = new vis.Network(container, data, options);
+
+        // add event listeners
+        network.on('select', function (params) {
+            document.getElementById('selection').innerHTML = 'Selection: ' + params.nodes;
+        });
+    }
+
+</script>
+
    </body>
  </html>
-
- <?php
- if(isset($_POST["nodoRaiz"])){
-   $_SESSION["ArbolBinario"]->__construct(new NodoBinario($_POST["nodoRaiz"]+=0));
-   print_r($_SESSION['ArbolBinario']);
- }
-
- //Para crear nodo
- if(isset($_POST["nodoPadre"]) && isset($_POST["nodoHijo"])){
-   $nodoHijo=new NodoBinario($_POST["nodoHijo"]+=0);
-   $_SESSION['ArbolBinario']->agregarNodo($_POST["nodoPadre"]+0, $_POST["group1"], $nodoHijo);
-   print_r($_SESSION['ArbolBinario']);
- }
-
- //Para eliminar nodo
- if(isset($_POST["eliminarNodo"])){
-   $_SESSION["ArbolBinario"]->eliminarNodo($_POST["eliminarNodo"]+0);
-   print_r($_SESSION['ArbolBinario']);
- }
-
- ?>
